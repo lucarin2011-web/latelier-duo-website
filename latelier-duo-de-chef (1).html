@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>L'Atelier Duo de Chef — Montréal</title>
+<meta name="description" content="L'Atelier Duo de Chef — two chefs, one plate. Dine-in, takeout and delivery in Montréal.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Special+Elite&family=Work+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --steel-900:#1e2124;
+    --steel-800:#282c30;
+    --steel-700:#383d42;
+    --steel-line: rgba(244,240,230,0.12);
+    --steel-line-strong: rgba(244,240,230,0.22);
+    --paper:#f4f0e6;
+    --paper-dim:#e9e2cd;
+    --paper-shadow:#d8cfb2;
+    --ink-green:#3c6b4a;
+    --ink-green-deep:#254333;
+    --ink-red:#b23a2e;
+    --ink-red-deep:#7c281f;
+    --brass:#b08d46;
+    --brass-light:#d9bd7d;
+    --type:'Special Elite', monospace;
+    --sans:'Work Sans', sans-serif;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    background:var(--steel-900);
+    color:var(--paper);
+    font-family:var(--sans);
+    line-height:1.6;
+    overflow-x:hidden;
+    -webkit-font-smoothing:antialiased;
+  }
+  ::selection{ background:var(--ink-red); color:var(--paper); }
+  a{ color:inherit; }
+  .wrap{ max-width:920px; margin:0 auto; padding:0 28px; position:relative; }
+  button{ font-family:inherit; cursor:pointer; }
+  .type{ font-family:var(--type); }
+
+  .grain{
+    position:fixed; inset:0; pointer-events:none; z-index:200;
+    opacity:0.045; mix-blend-mode:overlay;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  /* ---------- the rail ---------- */
+  .rail-track{
+    position:absolute; left:50%; top:0; bottom:0; width:2px;
+    background:var(--steel-line); transform:translateX(-50%); z-index:0;
+  }
+  .rail-fill{
+    position:absolute; left:0; top:0; width:100%; height:0%;
+    background:var(--brass); transition:height 0.1s linear;
+  }
+  @media (max-width:720px){ .rail-track{ left:22px; } }
+
+  /* ---------- nav ---------- */
+  .nav{
+    position:fixed; top:0; left:0; right:0; z-index:100;
+    display:flex; align-items:center; justify-content:space-between;
+    padding:18px 28px;
+    background:rgba(30,33,36,0.7);
+    border-bottom:1px solid transparent;
+    transition:background 0.3s ease, backdrop-filter 0.3s ease, border-color 0.3s ease, padding 0.3s ease;
+  }
+  .nav.scrolled{
+    background:rgba(30,33,36,0.95); backdrop-filter:blur(10px);
+    border-bottom:1px solid var(--steel-line); padding:13px 28px;
+  }
+  .nav-mark{ display:flex; align-items:center; gap:10px; font-family:var(--type); font-size:15px; letter-spacing:0.02em; }
+  .nav-clip{ width:16px; height:20px; flex-shrink:0; }
+  .nav-links{ display:flex; gap:26px; font-size:12.5px; letter-spacing:0.03em; font-family:var(--type); }
+  .nav-links a{ text-decoration:none; opacity:0.78; }
+  .nav-links a:hover{ opacity:1; color:var(--brass-light); }
+  .nav-cta{
+    font-family:var(--type); font-size:12px; letter-spacing:0.03em;
+    border:1px solid var(--brass); color:var(--brass-light); padding:9px 16px; text-decoration:none;
+    transition:background 0.2s, color 0.2s;
+  }
+  .nav-cta:hover{ background:var(--brass); color:var(--steel-900); }
+  @media (max-width:760px){ .nav-links{ display:none; } }
+
+  /* ---------- clip svg reused ---------- */
+  .clip-icon{ display:block; }
+
+  /* ---------- hero ---------- */
+  .hero{
+    position:relative; min-height:100vh; display:flex; flex-direction:column;
+    align-items:center; justify-content:center; padding:130px 24px 90px;
+    perspective:1800px; overflow:hidden;
+  }
+  .hero-wire{
+    position:absolute; top:96px; left:50%; transform:translateX(-50%);
+    width:min(560px, 80vw); height:1px; background:var(--steel-line-strong);
+  }
+  .hero-clip{ position:absolute; top:88px; left:50%; transform:translateX(-50%); z-index:6; }
+  .hero-ticket{
+    position:relative; z-index:5; width:min(560px, 90vw);
+    background:var(--paper); color:#20201c;
+    padding:40px 40px 34px; text-align:center;
+    box-shadow:0 30px 60px rgba(0,0,0,0.4);
+    transform-style:preserve-3d; transform-origin:top center; will-change:transform;
+  }
+  .perf{
+    height:7px; margin:0 -40px;
+    background-image:radial-gradient(circle, var(--steel-900) 3px, transparent 3.2px);
+    background-size:16px 100%; background-position:8px center;
+  }
+  .perf.bottom{ margin-top:22px; }
+  .perf.top{ margin-bottom:22px; }
+  .ticket-no{ font-family:var(--type); font-size:11px; letter-spacing:0.14em; color:#7a7460; }
+  .hero-ticket h1{
+    font-family:var(--type); font-weight:400; margin:16px 0 0;
+    font-size:clamp(30px, 6vw, 46px); line-height:1.15; letter-spacing:-0.01em;
+  }
+  .hero-ticket .sub{ font-family:var(--type); font-size:13.5px; color:#4a4638; margin-top:14px; line-height:1.7; }
+  .hero-rating-row{
+    display:flex; justify-content:center; gap:10px; align-items:center; margin-top:18px;
+    font-family:var(--type); font-size:11.5px; color:#7a7460; letter-spacing:0.04em;
+  }
+  .stamps{
+    position:absolute; z-index:6; width:104px; height:104px; border-radius:50%;
+    display:flex; align-items:center; justify-content:center; text-align:center;
+    font-family:var(--type); font-size:12px; letter-spacing:0.08em; line-height:1.3;
+    border:2.5px solid; mix-blend-mode:multiply; pointer-events:none;
+    transform:scale(0.3) rotate(0deg); opacity:0; transition:transform 0.7s cubic-bezier(.2,1.4,.4,1), opacity 0.4s ease;
+  }
+  .stamps.in{ opacity:0.88; }
+  .stamp-a{ top:14%; left:2%; color:var(--ink-green); border-color:var(--ink-green); transform:scale(0.3) rotate(-18deg); }
+  .stamp-a.in{ transform:scale(1) rotate(-14deg); }
+  .stamp-b{ bottom:10%; right:1%; color:var(--ink-red); border-color:var(--ink-red); transform:scale(0.3) rotate(18deg); }
+  .stamp-b.in{ transform:scale(1) rotate(11deg); }
+  .stamps::before{
+    content:''; position:absolute; inset:6px; border:1px solid currentColor; border-radius:50%; opacity:0.6;
+  }
+  @media (max-width:640px){ .stamps{ display:none; } }
+  .hero-actions{ display:flex; gap:14px; justify-content:center; margin-top:36px; flex-wrap:wrap; }
+  .btn{
+    font-family:var(--type); font-size:13px; letter-spacing:0.02em;
+    text-decoration:none; padding:13px 24px; display:inline-flex; align-items:center; gap:8px;
+    border:1.5px solid var(--paper); transition:transform 0.2s ease, background 0.2s ease, color 0.2s ease;
+  }
+  .btn.solid{ background:var(--paper); color:var(--steel-900); }
+  .btn.solid:hover{ transform:translateY(-2px); background:var(--brass-light); }
+  .btn.ghost{ color:var(--paper); }
+  .btn.ghost:hover{ background:rgba(244,240,230,0.08); transform:translateY(-2px); }
+  .scroll-cue{
+    margin-top:60px; font-family:var(--type); font-size:10.5px; letter-spacing:0.18em;
+    color:rgba(244,240,230,0.4); display:flex; flex-direction:column; align-items:center; gap:9px;
+  }
+  .scroll-cue .line{ width:1px; height:30px; background:rgba(244,240,230,0.35); animation:pulseLine 1.8s ease-in-out infinite; }
+  @keyframes pulseLine{ 0%,100%{ opacity:0.25; } 50%{ opacity:1; } }
+
+  /* ---------- sections on the rail ---------- */
+  section{ position:relative; padding:80px 0; }
+  .eyebrow{
+    font-family:var(--type); font-size:11px; letter-spacing:0.14em; text-transform:uppercase; color:var(--brass-light);
+  }
+  .reveal{ opacity:0; transform:translateY(24px) rotateX(6deg); transition:opacity 0.8s cubic-bezier(.16,.8,.3,1), transform 0.8s cubic-bezier(.16,.8,.3,1); transform-origin:top center; }
+  .reveal.in{ opacity:1; transform:translateY(0) rotateX(0deg); }
+
+  .ticket{
+    position:relative; background:var(--paper); color:#20201c; padding:34px 34px 28px;
+    box-shadow:0 18px 40px rgba(0,0,0,0.32); z-index:2;
+  }
+  .ticket-clip{ position:absolute; top:-14px; left:50%; transform:translateX(-50%); z-index:3; }
+
+  /* ---------- concept ---------- */
+  .concept-wrap{ max-width:620px; margin:0 auto; }
+  .concept .eyebrow{ display:block; text-align:center; margin-bottom:18px; }
+  .concept h2{
+    font-family:var(--type); font-weight:400; text-align:center;
+    font-size:clamp(26px, 4.4vw, 36px); line-height:1.3; color:#20201c;
+  }
+  .concept p.copy{
+    font-family:var(--type); font-size:13.5px; color:#4a4638; line-height:1.75; margin-top:18px; text-align:center;
+  }
+  .duo-row{ display:flex; gap:2px; margin-top:28px; background:var(--steel-900); }
+  .duo-half{ flex:1; background:var(--paper-dim); padding:22px 20px; }
+  .duo-half .tag{ font-family:var(--type); font-size:10.5px; letter-spacing:0.1em; }
+  .duo-half.a .tag{ color:var(--ink-green-deep); }
+  .duo-half.b .tag{ color:var(--ink-red-deep); }
+  .duo-half h3{ font-family:var(--type); font-weight:400; font-size:18px; margin:8px 0 6px; color:#20201c; }
+  .duo-half p{ font-family:var(--type); font-size:12px; color:#5a5646; line-height:1.6; }
+
+  /* ---------- plate scene ---------- */
+  .plate-scene{ height:190vh; padding:0; }
+  .plate-stage{
+    position:sticky; top:0; height:100vh; display:flex; align-items:center; justify-content:center;
+    perspective:1800px; overflow:hidden; background:radial-gradient(ellipse at 50% 50%, var(--steel-800), var(--steel-900) 72%);
+  }
+  .plate-caption{ position:absolute; top:13%; left:50%; transform:translateX(-50%); text-align:center; z-index:4; }
+  .plate-caption h2{
+    font-family:var(--type); font-weight:400; font-size:clamp(26px, 5vw, 42px); margin-top:12px; letter-spacing:-0.01em;
+  }
+  .plate-world{ position:relative; width:400px; height:400px; transform-style:preserve-3d; will-change:transform; }
+  .plate-world svg{ position:absolute; inset:0; width:100%; height:100%; overflow:visible; }
+
+  /* ---------- menu ticket ---------- */
+  .menu-intro{ text-align:center; max-width:520px; margin:0 auto 6px; }
+  .menu-intro h2{ font-family:var(--type); font-weight:400; font-size:clamp(26px, 4.4vw, 36px); }
+  .menu-intro p{ font-family:var(--type); font-size:12.5px; color:rgba(244,240,230,0.55); margin-top:12px; line-height:1.7; }
+  .chit{ max-width:440px; margin:44px auto 0; }
+  .chit-title{ font-family:var(--type); font-size:13px; letter-spacing:0.1em; text-align:center; color:#20201c; margin-bottom:14px; }
+  .chit-title.a{ color:var(--ink-green-deep); }
+  .chit-title.b{ color:var(--ink-red-deep); margin-top:26px; }
+  .chit-row{ display:flex; align-items:baseline; gap:6px; font-family:var(--type); font-size:12.5px; padding:9px 0; color:#2a2a24; }
+  .chit-row .leader{ flex:1; border-bottom:1.5px dotted #a8a290; height:1px; margin:0 2px; transform:translateY(-4px); }
+  .chit-row .price{ flex-shrink:0; }
+  .chit-desc{ font-family:var(--type); font-size:10.5px; color:#8a8470; display:block; margin-top:-6px; margin-bottom:4px; }
+  .menu-note{ text-align:center; font-family:var(--type); font-size:11px; color:rgba(244,240,230,0.4); margin-top:26px; }
+
+  /* ---------- receipt totals ---------- */
+  .receipt{ max-width:420px; margin:0 auto; }
+  .receipt .eyebrow{ display:block; text-align:center; margin-bottom:22px; }
+  .rline{ display:flex; align-items:baseline; gap:6px; font-family:var(--type); font-size:13px; padding:8px 0; }
+  .rline .leader{ flex:1; border-bottom:1.5px dotted rgba(244,240,230,0.3); height:1px; margin:0 2px; transform:translateY(-4px); }
+  .rline .val{ color:var(--brass-light); flex-shrink:0; }
+  .rline.total{ border-top:1px solid var(--steel-line-strong); margin-top:6px; padding-top:16px; font-size:16px; }
+  .rline.total .val{ font-size:22px; }
+
+  /* ---------- visit ticket ---------- */
+  .visit-wrap{ max-width:520px; margin:0 auto; }
+  .visit .eyebrow{ display:block; text-align:center; margin-bottom:16px; }
+  .visit h2{ font-family:var(--type); font-weight:400; text-align:center; font-size:clamp(26px,4.4vw,36px); color:#20201c; }
+  .field{ display:flex; gap:14px; padding:14px 0; border-bottom:1px dashed #cfc7ac; font-family:var(--type); }
+  .field:last-child{ border-bottom:none; }
+  .field .k{ font-size:10.5px; letter-spacing:0.08em; color:#8a8470; width:90px; flex-shrink:0; padding-top:2px; }
+  .field .v{ font-size:12.5px; color:#20201c; line-height:1.6; }
+  .field .v a{ text-decoration:underline; text-decoration-color:#a8a290; }
+  .badges{ display:flex; gap:8px; margin-top:20px; justify-content:center; flex-wrap:wrap; }
+  .badge{ font-family:var(--type); font-size:10.5px; border:1px solid #cfc7ac; padding:7px 12px; color:#4a4638; }
+  .map-frame{ margin-top:30px; border:3px solid var(--brass); height:280px; position:relative; overflow:hidden; }
+  .map-frame iframe{ width:100%; height:100%; border:0; filter:grayscale(0.5) contrast(1.05) brightness(0.92); }
+
+  /* ---------- footer receipt ---------- */
+  footer{ padding:0 0 60px; }
+  .foot-ticket{ max-width:380px; margin:0 auto; background:var(--paper); color:#20201c; padding:26px 30px 30px; text-align:center; box-shadow:0 18px 40px rgba(0,0,0,0.3); }
+  .foot-ticket .thanks{ font-family:var(--type); font-size:15px; }
+  .foot-ticket .addr{ font-family:var(--type); font-size:11px; color:#6a6656; margin-top:12px; line-height:1.7; }
+  .jagged{ height:12px; background:
+      linear-gradient(135deg, var(--paper) 50%, transparent 50%) 0 0/12px 12px repeat-x,
+      linear-gradient(-135deg, var(--paper) 50%, transparent 50%) 0 0/12px 12px repeat-x;
+    margin:0 -30px;
+  }
+  .jagged.top{ margin-bottom:14px; transform:rotate(180deg); }
+  .jagged.bottom{ margin-top:14px; }
+
+  @media (max-width:720px){
+    .wrap{ padding-left:52px; padding-right:20px; }
+    .hero{ padding-left:12px; padding-right:12px; }
+    .duo-row{ flex-direction:column; }
+    .ticket, .chit, .receipt, .visit-wrap{ max-width:100%; }
+  }
+  @media (prefers-reduced-motion: reduce){
+    html{ scroll-behavior:auto; }
+    .hero-ticket, .plate-world{ transform:none !important; }
+    .reveal, .stamps{ opacity:1; transform:none; transition:none; }
+  }
+</style>
+</head>
+<body>
+<div class="grain"></div>
+<div class="rail-track"><div class="rail-fill" id="railFill"></div></div>
+
+<nav class="nav" id="nav">
+  <div class="nav-mark">
+    <svg class="nav-clip" viewBox="0 0 16 20" fill="none"><path d="M3 1h10v9c0 3-2 5-5 5s-5-2-5-5V1z" stroke="var(--brass-light)" stroke-width="1.4"/><path d="M3 6h10" stroke="var(--brass-light)" stroke-width="1.4"/></svg>
+    L'Atelier Duo
+  </div>
+  <div class="nav-links">
+    <a href="#concept">Concept</a>
+    <a href="#menu">Menu</a>
+    <a href="#visit">Visit</a>
+  </div>
+  <a class="nav-cta" href="tel:+15145442433">(514) 544-2433</a>
+</nav>
+
+<header class="hero" id="hero">
+  <div class="hero-wire"></div>
+  <svg class="hero-clip" width="26" height="30" viewBox="0 0 26 30" fill="none">
+    <rect x="2" y="1" width="22" height="16" rx="3" fill="var(--steel-700)" stroke="var(--brass)" stroke-width="1.3"/>
+    <circle cx="13" cy="9" r="2" fill="var(--brass-light)"/>
+    <path d="M13 17v6" stroke="var(--steel-700)" stroke-width="3"/>
+  </svg>
+
+  <div class="stamps stamp-a" id="stampA">ROOTED<br>&amp; SLOW</div>
+  <div class="stamps stamp-b" id="stampB">BRIGHT<br>&amp; BOLD</div>
+
+  <div class="hero-ticket" id="heroTicket">
+    <div class="ticket-no">ORDER NO. 047 · TABLE FOR TWO</div>
+    <h1>Two chefs.<br>One plate.</h1>
+    <div class="perf bottom"></div>
+    <p class="sub">L'Atelier Duo de Chef pairs two culinary instincts at one pass — dine-in, takeout, and delivery in Montréal's east end.</p>
+    <div class="hero-rating-row">★ 4.7 / 5 · 1,010 REVIEWS · $10–20 / PERSON</div>
+  </div>
+
+  <div class="hero-actions">
+    <a class="btn solid" href="https://www.google.com/searchviewer/42?cvd=CLw_EicKJeICIjIgEhkiF9LX29IPEQoNL2cvMTFoNTdzczI3eBgAOgMI8A0%3D&g2lbs=AEzIGDs7DoAbv9ngwDSKO27bV4-norTDOozlqNyalNzzIAOqRMNKLK07G0oPzym-rGDqJoGmsXs4&hl=en-CA&gl=ca&fo_m=MfohQo559jFvMUOzJVpjPL1YMfZ3bInYwBDuMfaXTPp5KXh-&utm_source=tactile&gei=XD2Sapf6F6-1ptQPxp2hkAQ&ei=XD2Sapf6F6-1ptQPxp2hkAQ&fo_s=OA&opi=79508299&ebb=1&cs=0&foub=mcpp">Order online</a>
+    <a class="btn ghost" href="tel:+15145442433">Call to reserve</a>
+  </div>
+  <div class="scroll-cue"><span>Down the rail</span><span class="line"></span></div>
+</header>
+
+<section id="concept">
+  <div class="wrap">
+    <div class="ticket reveal concept" style="max-width:620px; margin:0 auto;">
+      <svg class="ticket-clip" width="26" height="18" viewBox="0 0 26 18" fill="none"><rect x="2" y="1" width="22" height="12" rx="3" fill="var(--steel-700)" stroke="var(--brass)" stroke-width="1.3"/><circle cx="13" cy="7" r="1.8" fill="var(--brass-light)"/></svg>
+      <div class="concept-wrap">
+        <span class="eyebrow">The concept</span>
+        <h2>One kitchen,<br>two points of view.</h2>
+        <p class="copy">Every dish at L'Atelier passes through two hands before it reaches yours — one chef building the base, the other finishing it. The result sits somewhere between comfort and surprise, at a neighbourhood price.</p>
+        <div class="duo-row">
+          <div class="duo-half a">
+            <div class="tag">01 · ROOTED</div>
+            <h3>Built low and slow</h3>
+            <p>Stocks, braises, and the dishes that need time — started long before service opens.</p>
+          </div>
+          <div class="duo-half b">
+            <div class="tag">02 · BRIGHT</div>
+            <h3>Finished right before you</h3>
+            <p>Acid, char, and last-minute work — the layer that wakes a plate up at the pass.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="plate-scene" id="plateScene">
+  <div class="plate-stage">
+    <div class="plate-caption reveal">
+      <span class="eyebrow">Signature moment</span>
+      <h2>Where the two<br>stamps meet.</h2>
+    </div>
+    <div class="plate-world" id="plateWorld">
+      <svg viewBox="0 0 200 200">
+        <circle cx="100" cy="100" r="98" fill="none" stroke="rgba(176,141,70,0.4)" stroke-dasharray="2 6"/>
+        <ellipse cx="100" cy="100" rx="86" ry="86" fill="var(--paper)"/>
+        <ellipse cx="100" cy="100" rx="66" ry="66" fill="none" stroke="var(--paper-shadow)" stroke-width="1.5"/>
+        <path d="M100 40 A60 60 0 0 1 160 100 L100 100 Z" fill="var(--ink-green)"/>
+        <path d="M100 100 L160 100 A60 60 0 0 1 100 160 Z" fill="var(--ink-green-deep)"/>
+        <path d="M100 160 A60 60 0 0 1 40 100 L100 100 Z" fill="var(--ink-red-deep)"/>
+        <path d="M40 100 A60 60 0 0 1 100 40 L100 100 Z" fill="var(--ink-red)"/>
+        <circle cx="100" cy="100" r="60" fill="none" stroke="var(--paper)" stroke-width="2"/>
+        <circle cx="100" cy="100" r="9" fill="var(--paper)"/>
+        <line x1="34" y1="100" x2="16" y2="100" stroke="var(--paper)" stroke-width="2" stroke-linecap="round"/>
+        <line x1="166" y1="100" x2="184" y2="100" stroke="var(--paper)" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+    </div>
+  </div>
+</section>
+
+<section id="menu">
+  <div class="wrap">
+    <div class="menu-intro reveal">
+      <span class="eyebrow">On the table</span>
+      <h2>A sample of the menu</h2>
+      <p>Prices reflect the room's $10–20 per person range. Full menu, daily specials and dietary notes available in-house.</p>
+    </div>
+
+    <div class="ticket chit reveal">
+      <svg class="ticket-clip" width="26" height="18" viewBox="0 0 26 18" fill="none"><rect x="2" y="1" width="22" height="12" rx="3" fill="var(--steel-700)" stroke="var(--brass)" stroke-width="1.3"/><circle cx="13" cy="7" r="1.8" fill="var(--brass-light)"/></svg>
+      <div class="perf top"></div>
+      <div class="chit-title a">— ROOTED PLATES —</div>
+      <div class="chit-row"><span>BRAISED SHORT RIB</span><span class="leader"></span><span class="price">$18</span></div>
+      <span class="chit-desc">root vegetable purée, 4-hour braise</span>
+      <div class="chit-row"><span>DUCK CONFIT</span><span class="leader"></span><span class="price">$17</span></div>
+      <span class="chit-desc">lentils du puy, herb jus</span>
+      <div class="chit-row"><span>WILD MUSHROOM RISOTTO</span><span class="leader"></span><span class="price">$15</span></div>
+      <span class="chit-desc">parmesan, thyme</span>
+
+      <div class="chit-title b">— BRIGHT PLATES —</div>
+      <div class="chit-row"><span>SEARED SCALLOPS</span><span class="leader"></span><span class="price">$19</span></div>
+      <span class="chit-desc">citrus beurre blanc, finished tableside</span>
+      <div class="chit-row"><span>CHARRED OCTOPUS</span><span class="leader"></span><span class="price">$16</span></div>
+      <span class="chit-desc">salsa verde, smoked paprika</span>
+      <div class="chit-row"><span>HEIRLOOM TOMATO, BURRATA</span><span class="leader"></span><span class="price">$14</span></div>
+      <span class="chit-desc">basil oil, aged balsamic</span>
+      <div class="perf bottom"></div>
+    </div>
+    <p class="menu-note">Menu items shown are representative examples — swap in your current dishes and pricing before publishing.</p>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="receipt reveal">
+      <span class="eyebrow">The tally</span>
+      <div class="rline"><span>RATING</span><span class="leader"></span><span class="val">4.7 / 5</span></div>
+      <div class="rline"><span>REVIEWS COUNTED</span><span class="leader"></span><span class="val">1,010</span></div>
+      <div class="rline"><span>PRICE PER PERSON</span><span class="leader"></span><span class="val">$10–20</span></div>
+      <div class="rline"><span>SERVICE</span><span class="leader"></span><span class="val">DINE-IN / TAKEOUT / DELIVERY</span></div>
+      <div class="rline total"><span>WORTH THE TRIP</span><span class="leader"></span><span class="val">YES</span></div>
+    </div>
+  </div>
+</section>
+
+<section id="visit">
+  <div class="wrap">
+    <div class="ticket visit reveal" style="max-width:520px; margin:0 auto;">
+      <svg class="ticket-clip" width="26" height="18" viewBox="0 0 26 18" fill="none"><rect x="2" y="1" width="22" height="12" rx="3" fill="var(--steel-700)" stroke="var(--brass)" stroke-width="1.3"/><circle cx="13" cy="7" r="1.8" fill="var(--brass-light)"/></svg>
+      <div class="visit-wrap">
+        <span class="eyebrow">Find us</span>
+        <h2>Come sit at the pass</h2>
+        <div class="field"><div class="k">ADDRESS</div><div class="v"><a href="https://www.google.com/maps/search/?api=1&query=12545+Av.+Fernand-Gauthier,+Montr%C3%A9al,+QC+H1E+2X2" target="_blank" rel="noopener">12545 Av. Fernand-Gauthier, Montréal, QC H1E 2X2</a></div></div>
+        <div class="field"><div class="k">PHONE</div><div class="v"><a href="tel:+15145442433">(514) 544-2433</a></div></div>
+        <div class="field"><div class="k">HOURS</div><div class="v">Open daily · closes 10 p.m. tonight · opens 2 p.m. Saturday<br><span style="color:#a8a290; font-size:10.5px;">Confirm full weekly hours by phone.</span></div></div>
+        <div class="field"><div class="k">SERVICE</div><div class="v">Dine-in, takeout and delivery</div></div>
+        <div class="badges">
+          <span class="badge">DINE-IN</span>
+          <span class="badge">TAKEOUT</span>
+          <span class="badge">DELIVERY</span>
+        </div>
+        <div class="map-frame">
+          <iframe loading="lazy" referrerpolicy="no-referrer-when-downgrade"
+            src="https://www.google.com/maps?q=12545+Av.+Fernand-Gauthier,+Montr%C3%A9al,+QC+H1E+2X2&output=embed"></iframe>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="jagged top"></div>
+    <div class="foot-ticket">
+      <div class="thanks">*** THANK YOU — COME AGAIN ***</div>
+      <div class="addr">L'ATELIER DUO DE CHEF<br>12545 AV. FERNAND-GAUTHIER, MONTRÉAL, QC<br>(514) 544-2433</div>
+    </div>
+    <div class="jagged bottom"></div>
+  </div>
+</footer>
+
+<script>
+  var nav = document.getElementById('nav');
+  var heroTicket = document.getElementById('heroTicket');
+  var hero = document.getElementById('hero');
+  var plateScene = document.getElementById('plateScene');
+  var plateWorld = document.getElementById('plateWorld');
+  var railFill = document.getElementById('railFill');
+  var stampA = document.getElementById('stampA');
+  var stampB = document.getElementById('stampB');
+  var ticking = false;
+  var stamped = false;
+
+  function clamp(v, min, max){ return Math.max(min, Math.min(max, v)); }
+
+  function onScroll(){
+    if(!ticking){ window.requestAnimationFrame(update); ticking = true; }
+  }
+
+  function update(){
+    var sy = window.scrollY || window.pageYOffset;
+    nav.classList.toggle('scrolled', sy > 40);
+
+    var docH = document.documentElement.scrollHeight - window.innerHeight;
+    var pct = docH > 0 ? clamp(sy / docH, 0, 1) * 100 : 0;
+    railFill.style.height = pct + '%';
+
+    var heroH = hero.offsetHeight;
+    var heroProgress = clamp(sy / heroH, 0, 1);
+    var tilt = heroProgress * 22;
+    heroTicket.style.transform = 'rotateX(' + tilt + 'deg)';
+    if(heroProgress > 0.12 && !stamped){
+      stamped = true;
+      stampA.classList.add('in');
+      stampB.classList.add('in');
+    }
+
+    var pRect = plateScene.getBoundingClientRect();
+    var sceneH = plateScene.offsetHeight;
+    var plateProgress = clamp((-pRect.top) / (sceneH - window.innerHeight), 0, 1);
+    var rotY = plateProgress * 360;
+    var rotX = 58 - plateProgress * 32;
+    var scale = 0.66 + plateProgress * 0.55;
+    plateWorld.style.transform = 'rotateX(' + rotX + 'deg) rotateY(' + rotY + 'deg) scale(' + scale + ')';
+
+    ticking = false;
+  }
+
+  window.addEventListener('scroll', onScroll, { passive: true });
+  window.addEventListener('resize', onScroll);
+  update();
+
+  var revealEls = document.querySelectorAll('.reveal');
+  var io = new IntersectionObserver(function(entries){
+    entries.forEach(function(entry){
+      if(entry.isIntersecting){
+        entry.target.classList.add('in');
+        io.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.12 });
+  revealEls.forEach(function(el){ io.observe(el); });
+</script>
+
+</body>
+</html>
